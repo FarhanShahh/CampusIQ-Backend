@@ -4,6 +4,7 @@ const Teacher = require("../models/Teacher.js");
 const AttendanceSession = require("../models/AttendanceSession.js");
 const AttendanceRecord = require("../models/AttendanceRecord.js");
 const Subject = require("../models/Subject.js");
+const Announcement = require("../models/Announcement.js");
 const SubjectScore = require("../models/SubjectScore.js");
 const Student = require("../models/Student.js");
 
@@ -113,7 +114,15 @@ const createTeacher = async (req, res) => {
 };
 
 const getTeachers = async (req, res) => {
-  const teachers = await Teacher.find().select("-password");
+  const { adminID } = req.query;
+  let query = {};
+  if (adminID) {
+    const admin = await Admin.findById(adminID);
+    if (admin && admin.department) {
+      query.department = admin.department;
+    }
+  }
+  const teachers = await Teacher.find(query).select("-password");
   res.json(teachers);
 };
 
